@@ -1,4 +1,4 @@
-defmodule Sleeky.View.Dsl do
+defmodule Sleeky.Ui.View.Dsl do
   @moduledoc false
   use Diesel.Dsl,
     otp_app: :sleeky,
@@ -116,7 +116,7 @@ defmodule Sleeky.View.Dsl do
       :video,
       :wbr,
       # custom extensions
-      :using,
+      :layout,
       :slot,
       :each,
       :expand

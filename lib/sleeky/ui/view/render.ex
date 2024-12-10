@@ -1,4 +1,4 @@
-defmodule Sleeky.View.Render do
+defmodule Sleeky.Ui.View.Render do
   @moduledoc false
 
   @self_closing_tags [
@@ -55,7 +55,7 @@ defmodule Sleeky.View.Render do
     " #{Enum.map_join(attrs, " ", &do_attr/1)}"
   end
 
-  defp do_attr({name, _}) when name in [:defer] do
+  defp do_attr({name, true}) do
     "#{name}"
   end
 

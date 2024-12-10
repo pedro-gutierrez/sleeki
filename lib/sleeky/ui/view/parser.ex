@@ -1,4 +1,4 @@
-defmodule Sleeky.View.Parser do
+defmodule Sleeky.Ui.View.Parser do
   @moduledoc false
   @behaviour Diesel.Parser
 

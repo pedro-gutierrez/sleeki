@@ -11,16 +11,7 @@ defmodule Sleeky.Ui.Generator.Router do
 
     conn = var(:conn)
 
-    routes =
-      for {path, page} <- ui.pages do
-        html = page.render()
-
-        quote do
-          get unquote(path) do
-            send_html(unquote(conn), unquote(html), 200)
-          end
-        end
-      end
+    routes = Enum.map(ui.pages, &route(ui, &1))
 
     quote do
       defmodule unquote(module_name) do
@@ -43,6 +34,34 @@ defmodule Sleeky.Ui.Generator.Router do
 
         match _ do
           send_html(unquote(conn), "<h1>Not Found</h1>", 404)
+        end
+      end
+    end
+  end
+
+  defp route(ui, page) do
+    conn = var(:conn)
+    not_found_view = ui.not_found_view
+    error_view = ui.error_view
+
+    quote do
+      match unquote(page.path), via: unquote(page.method) do
+        case unquote(page.module).data(unquote(conn).params) do
+          {:ok, data} ->
+            html = unquote(page.module).render(data)
+            send_html(unquote(conn), html, 200)
+
+          {:ok, :redirect, path} ->
+            conn = put_resp_header(unquote(conn), "location", path)
+            send_resp(conn, 302, "")
+
+          {:error, :not_found} ->
+            html = unquote(not_found_view).render(unquote(conn).params)
+            send_html(unquote(conn), html, 200)
+
+          {:error, other} ->
+            html = unquote(error_view).render(unquote(conn).params)
+            send_html(unquote(conn), html, 200)
         end
       end
     end

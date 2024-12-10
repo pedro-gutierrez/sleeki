@@ -1,8 +1,8 @@
-defmodule Sleeky.View.Generator.Render do
+defmodule Sleeky.Ui.View.Generator.Render do
   @moduledoc false
   @behaviour Diesel.Generator
 
-  alias Sleeky.View
+  alias Sleeky.Ui.View
 
   @impl true
   def generate(html, _opts) do

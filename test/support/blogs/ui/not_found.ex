@@ -1,4 +1,4 @@
-defmodule Blogs.Ui.Error do
+defmodule Blogs.Ui.NotFound do
   @moduledoc false
   use Sleeky.Ui.View
 
@@ -9,7 +9,7 @@ defmodule Blogs.Ui.Error do
       end
 
       body do
-        h1 "Error Page"
+        h1 "Not found"
       end
     end
   end

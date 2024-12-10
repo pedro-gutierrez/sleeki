@@ -3,6 +3,6 @@ defmodule Blogs.Ui do
   use Sleeky.Ui
 
   ui do
-    page Blogs.Ui.Index
+    page Blogs.Ui.Index, at: "/"
   end
 end

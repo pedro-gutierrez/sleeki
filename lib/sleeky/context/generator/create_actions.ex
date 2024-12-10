@@ -6,7 +6,8 @@ defmodule Sleeky.Context.Generator.CreateActions do
 
   @impl true
   def generate(context, _) do
-    create_funs(context) ++ do_create_funs(context) ++ create_children_funs(context)
+    create_funs(context) ++
+      do_create_funs(context) ++ bulk_create_funs(context) ++ create_children_funs(context)
   end
 
   defp create_funs(context) do
@@ -119,6 +120,35 @@ defmodule Sleeky.Context.Generator.CreateActions do
             {:ok, _}, _ -> {:cont, :ok}
             {:error, _} = error, _ -> {:halt, error}
           end)
+        end
+      end
+    end
+  end
+
+  defp bulk_create_funs(context) do
+    for model <- context.models, %{name: :create} <- model.actions() do
+      single_fun_name = String.to_atom("create_#{model.name()}")
+      bulk_fun_name = String.to_atom("create_#{model.plural()}")
+
+      quote do
+        def unquote(bulk_fun_name)(items, context \\ %{}) when is_list(items) do
+          repo = repo()
+
+          with {:ok, :ok} <-
+                 repo.transaction(fn ->
+                   items
+                   |> Enum.reduce_while(nil, fn item, _ ->
+                     case unquote(single_fun_name)(item, context) do
+                       {:ok, _} -> {:cont, :ok}
+                       {:error, _} = error -> {:halt, error}
+                     end
+                   end)
+                   |> then(fn
+                     :ok -> :ok
+                     {:error, reason} -> repo.rollback(reason)
+                   end)
+                 end),
+               do: :ok
         end
       end
     end

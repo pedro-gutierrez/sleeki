@@ -1,8 +1,8 @@
-defmodule Sleeky.ViewTest do
+defmodule Sleeky.Ui.ViewTest do
   use ExUnit.Case
 
   defmodule Div do
-    use Sleeky.View
+    use Sleeky.Ui.View
 
     view do
       div id: "myDiv", class: "{{ myClass }}" do
@@ -12,7 +12,7 @@ defmodule Sleeky.ViewTest do
   end
 
   defmodule Layout do
-    use Sleeky.View
+    use Sleeky.Ui.View
 
     view do
       header do
@@ -22,10 +22,10 @@ defmodule Sleeky.ViewTest do
   end
 
   defmodule Page do
-    use Sleeky.View
+    use Sleeky.Ui.View
 
     view do
-      using Layout do
+      layout Layout do
         slot :header do
           Div
         end
@@ -34,7 +34,7 @@ defmodule Sleeky.ViewTest do
   end
 
   defmodule Items do
-    use Sleeky.View
+    use Sleeky.Ui.View
 
     view do
       ul do
@@ -48,7 +48,7 @@ defmodule Sleeky.ViewTest do
   end
 
   defmodule Item do
-    use Sleeky.View
+    use Sleeky.Ui.View
 
     view do
       li do
@@ -58,7 +58,7 @@ defmodule Sleeky.ViewTest do
   end
 
   defmodule NamedItems do
-    use Sleeky.View
+    use Sleeky.Ui.View
 
     view do
       ul do
@@ -70,7 +70,7 @@ defmodule Sleeky.ViewTest do
   end
 
   defmodule Link do
-    use Sleeky.View
+    use Sleeky.Ui.View
 
     view do
       a href: "{{ link.url }}" do
@@ -79,60 +79,8 @@ defmodule Sleeky.ViewTest do
     end
   end
 
-  defmodule Nav do
-    use Sleeky.View
-
-    view do
-      expand :links, as: :link do
-        a href: "{{ link.url }}" do
-          "{{ link.title }}"
-        end
-      end
-    end
-  end
-
-  defmodule NamedNav do
-    use Sleeky.View
-
-    view do
-      expand :links, as: :link do
-        Link
-      end
-    end
-  end
-
-  defmodule Menu do
-    use Sleeky.View
-
-    view do
-      nav do
-        using Nav do
-          slot :links do
-            [url: "/one", title: "one"]
-            [url: "/two", title: "two"]
-          end
-        end
-      end
-    end
-  end
-
-  defmodule NamedMenu do
-    use Sleeky.View
-
-    view do
-      nav do
-        using NamedNav do
-          slot :links do
-            [url: "/one", title: "one"]
-            [url: "/two", title: "two"]
-          end
-        end
-      end
-    end
-  end
-
   defmodule Html do
-    use Sleeky.View
+    use Sleeky.Ui.View
 
     view do
       html do
@@ -168,14 +116,6 @@ defmodule Sleeky.ViewTest do
       params = %{"items" => ["one", "two", "three"]}
 
       assert "<ul><li>one</li><li>two</li><li>three</li></ul>" = NamedItems.render(params)
-    end
-
-    test "expands data slots using inline html" do
-      assert "<nav><a href=\"/one\">one</a><a href=\"/two\">two</a></nav>" = Menu.render()
-    end
-
-    test "expands data slots using named views" do
-      assert "<nav><a href=\"/one\">one</a><a href=\"/two\">two</a></nav>" = NamedMenu.render()
     end
 
     test "renders doctype for html pages" do

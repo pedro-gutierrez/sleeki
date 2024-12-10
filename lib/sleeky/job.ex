@@ -82,7 +82,9 @@ defmodule Sleeky.Job do
       model: model,
       id: id,
       queue: job.queue,
+      job: job.id,
       reason: format_error(reason),
+      attempt: job.attempt,
       attempts_left: attempts_left
     )
   end
@@ -92,7 +94,9 @@ defmodule Sleeky.Job do
       task: task,
       model: model,
       id: id,
-      queue: job.queue
+      job: job.id,
+      queue: job.queue,
+      attempt: job.attempt
     )
   end
 
